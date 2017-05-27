@@ -34,15 +34,12 @@ class PymolServer(SimpleXMLRPCServer) :
         if not callable(func) :
             raise ValueError("{} is not callable".format(method))
 
-        print args
-        print kwargs
         result = func(*args, **kwargs)
         if result is None :
             result = -1
         return result
 
 def background(server):
-    print "BG"
     thread = threading.Thread(target=server.serve_forever)
     thread.setDaemon(1)
     thread.start()
