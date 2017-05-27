@@ -31,6 +31,10 @@ BasePymol$methods(
       .self$url <<- "http://localhost:9123/RPC2"
       .self$pid <<- sys::exec_background(.self$executable, .self$args)
     },
+    finalize = function() {
+      "Closes PyMol when this class is garbage collected."
+      .self$quit()
+    },
     .rpc = function(method, ...) {
       "Call a remote PyMol method."
       XMLRPC::xml.rpc(.self$url, method, ...)
