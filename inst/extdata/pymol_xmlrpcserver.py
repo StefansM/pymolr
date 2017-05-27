@@ -29,7 +29,7 @@ class PymolServer(SimpleXMLRPCServer) :
         if hasattr(cmd, method) :
             func = getattr(cmd, method)
         if not callable(func) :
-            raise ArgumentError("{} is not callable".format(method))
+            raise ValueError("{} is not callable".format(method))
 
         print args
         print kwargs
