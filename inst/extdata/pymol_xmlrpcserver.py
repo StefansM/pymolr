@@ -14,7 +14,10 @@ server = None
 
 class PymolServer(SimpleXMLRPCServer) :
     def __init__ (self, *args) :
-        SimpleXMLRPCServer.__init__(self, *args)
+        try:
+            SimpleXMLRPCServer.__init__(self, *args)
+        except:
+            cmd.quit(1)
 
     def _dispatch (self, method, params) :
         args = []
