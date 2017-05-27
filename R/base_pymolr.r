@@ -39,6 +39,29 @@ BasePymol$methods(
       }
 
       .self$pid <<- sys::exec_background(.self$executable, .self$args)
+
+      # Loop until the RPC server comes up. PyMol can take quite a long time to
+      # start, so we might have to Sys.sleep() a few times until it comes up.
+      exit.status <- NA
+      max.tries <- 3
+      connection.tries <- 0
+      while(TRUE){
+        exit.status <- sys::exec_status(.self$pid, wait=FALSE)
+        if(!is.na(exit.status)
+           || tryCatch(.self$is.connected(), error=function(cond) FALSE)
+           || connection.tries == max.tries) {
+          break
+        }
+        Sys.sleep(1)
+        connection.tries <- connection.tries + 1
+      }
+
+      if(!is.na(exit.status)){
+        stop(paste("Unable to start PyMol process. Exit status:", exit.status))
+      }else if(connection.tries == max.tries){
+        tools::pskill(.self$pid)
+        stop("Couldn't connect to PyMol XMLRPC server.")
+      }
     },
     finalize = function() {
       "Closes PyMol when this class is garbage collected."
