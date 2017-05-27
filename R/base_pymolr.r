@@ -25,7 +25,7 @@ BasePymol$methods(
       rpc.server <- system.file("extdata", "pymol_xmlrpcserver.py",
                                 package="pymolr")
       .self$executable <<- executable
-      .self$args <<- c("-q",
+      .self$args <<- c("-q", "-Q",
                        if(!show.gui) "-c",
                        rpc.server,
                        if(show.gui) "--rpc-bg",
