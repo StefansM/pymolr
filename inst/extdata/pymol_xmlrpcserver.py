@@ -1,4 +1,4 @@
-from pymol import cmd, util
+from pymol import cmd, util, keywords
 import xmlrpclib
 from SimpleXMLRPCServer import SimpleXMLRPCServer
 import argparse
@@ -26,7 +26,10 @@ class PymolServer(SimpleXMLRPCServer) :
                 args.append(param)
 
         func = None
-        if hasattr(cmd, method) :
+        # Look up method from keywords first
+        if method in keywords.get_command_keywords():
+            func = keywords.get_command_keywords()[method][0]
+        elif hasattr(cmd, method) :
             func = getattr(cmd, method)
         if not callable(func) :
             raise ValueError("{} is not callable".format(method))
