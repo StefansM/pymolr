@@ -26,6 +26,7 @@
 #' @field args Command line arguments passed to PyMol
 #' @field url URL of the RPC server.
 #' @include select.r pymol_methods.r
+#' @export Pymol
 #' @export
 Pymol <- setRefClass("Pymol", contains="BasePymol", methods=list(
   initialize = function(...) {

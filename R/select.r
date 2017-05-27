@@ -53,6 +53,8 @@ pymol.types = list(
   "ss"="character"
 )
 
+#' @export Selection
+#' @export
 Selection <- setClass("Selection",
                       contains=c("AbstractSelection"),
                       slots=c("selection"="list"))
@@ -184,6 +186,8 @@ setMethod("as.character", signature(x="UnaryBooleanSelection"), function(x) {
          ")")
 })
 
+#' @export NamedSelection
+#' @export
 NamedSelection <- setClass("NamedSelection",
                            contains="AbstractSelection",
                            slots=c("name"="character"))
