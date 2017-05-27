@@ -40,6 +40,11 @@ Pymol <- setRefClass("Pymol", contains="BasePymol", methods=list(
     "Fetch a structure and return a \\code{\\link{NamedSelection}}."
     struc.name <- callSuper(...)
     NamedSelection(struc.name)
+  },
+  get_names = function(...) {
+    "Return a list of \\code{\\link{NamedSelection}}s."
+    names <- callSuper(...)
+    lapply(names, NamedSelection)
   }
 ))
 
