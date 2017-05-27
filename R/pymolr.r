@@ -45,6 +45,12 @@ Pymol <- setRefClass("Pymol", contains="BasePymol", methods=list(
     "Return a list of \\code{\\link{NamedSelection}}s."
     names <- callSuper(...)
     lapply(names, NamedSelection)
+  },
+  quit = function(...) {
+    "Send quit command to Pymol."
+    # When pymol quits we get an error about an empty server reply which we just
+    # ignore.
+    tryCatch(callSuper(...), error=function(...){})
   }
 ))
 
