@@ -19,7 +19,8 @@ BasePymol <- setRefClass("BasePymol",
                                      url="character"))
 
 BasePymol$methods(
-    initialize = function(executable=Sys.which("pymol"), show.gui=FALSE) {
+    initialize = function(executable=Sys.which("pymol"), show.gui=FALSE,
+                          rpc.port=9123) {
       "Initialise a new Pymol class."
       rpc.server <- system.file("extdata", "pymol_xmlrpcserver.py",
                                 package="pymolr")
@@ -27,8 +28,9 @@ BasePymol$methods(
       .self$args <<- c("-q",
                        if(!show.gui) "-c",
                        rpc.server,
-                       if(show.gui) "--rpc-bg")
-      .self$url <<- "http://localhost:9123/RPC2"
+                       if(show.gui) "--rpc-bg",
+                       "--rpc-port", rpc.port)
+      .self$url <<- paste0("http://localhost:", rpc.port, "/RPC2")
       .self$pid <<- sys::exec_background(.self$executable, .self$args)
     },
     finalize = function() {
