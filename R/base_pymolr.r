@@ -31,11 +31,22 @@ BasePymol$methods(
                        if(show.gui) "--rpc-bg",
                        "--rpc-port", rpc.port)
       .self$url <<- paste0("http://localhost:", rpc.port, "/RPC2")
+
+      # Before we start a pymol server, make sure that there is not one already
+      # running on this port.
+      if(tryCatch(.self$is.connected(), error=function(...) "err") != "err"){
+        stop(paste("A process is already running on port", rpc.port))
+      }
+
       .self$pid <<- sys::exec_background(.self$executable, .self$args)
     },
     finalize = function() {
       "Closes PyMol when this class is garbage collected."
       .self$quit()
+    },
+    is.connected = function() {
+      "Check that the PyMol server is active."
+      .self$.rpc("ping") == "pong"
     },
     .rpc = function(method, ...) {
       "Call a remote PyMol method."

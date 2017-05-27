@@ -30,7 +30,9 @@ class PymolServer(SimpleXMLRPCServer) :
 
         func = None
         # Look up method from keywords first
-        if method in keywords.get_command_keywords():
+        if method == "ping":
+            return "pong"
+        elif method in keywords.get_command_keywords():
             func = keywords.get_command_keywords()[method][0]
         elif hasattr(cmd, method) :
             func = getattr(cmd, method)
