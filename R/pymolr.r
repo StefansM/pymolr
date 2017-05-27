@@ -1,9 +1,20 @@
-#' Class containing a connection to a PyMol process.
+#' Start and communicate with a PyMol process.
 #'
 #' When this class is instantiated, a PyMol process is spawned. The PyMol
 #' process may be manipulated using the methods in this class. When an instance
 #' of this class is deleted (and garbage collected), the pymol process will be
 #' closed.
+#'
+#' All commands from the PyMol API (excluding a few internal methods) are
+#' exposed by this class. The majority of methods do not return a useful value,
+#' and have been generated programatically from the PyMol API. These are
+#' documented in \code{\link{BasePymol-class}}, but are identical to the
+#' corresponding PyMol commands.
+#'
+#' Some methods process their arguments in a way designed to ease the interface
+#' between \R and PyMol. These methods are documented in this file.
+#
+#' @section Communication with PyMol:
 #'
 #' This class communicates with PyMol using XML-RPC, an XML-based protocol
 #' for remote procedure calls. Rather than use the default PyMol XML-RPC server
@@ -21,10 +32,12 @@ Pymol <- setRefClass("Pymol", contains="BasePymol", methods=list(
     callSuper(...)
   },
   load = function(...) {
+    "Load a structure and return a \\code{\\link{NamedSelection}}."
     struc.name <- callSuper(...)
     NamedSelection(struc.name)
   },
   fetch = function(...) {
+    "Fetch a structure and return a \\code{\\link{NamedSelection}}."
     struc.name <- callSuper(...)
     NamedSelection(struc.name)
   }
