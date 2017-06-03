@@ -52,6 +52,16 @@ Pymol <- setRefClass("Pymol", contains="BasePymol", methods=list(
     # When pymol quits we get an error about an empty server reply which we just
     # ignore.
     tryCatch(callSuper(...), error=function(...){})
+  },
+  png = function(filename, ...) {
+    "Build a PNG image."
+
+    # We want to add a "pymol.image" attr to the return value so it can be
+    # printed correctly by knitr's knit_print method.
+    callSuper(filename, ...)
+    image.name <- filename
+    class(image.name) <- "pymol.image"
+    image.name
   }
 ))
 
@@ -61,3 +71,9 @@ setMethod("rpc.serialize", "AbstractSelection", function(x) {
                   XML::newXMLNode("string",
                                   XML::newXMLCDataNode(as.character(x))))
 })
+
+#' @importFrom knitr knit_print
+#' @export
+knit_print.pymol.image <- function(x, ...) {
+  knitr::include_graphics(x, dpi=NA)
+}
