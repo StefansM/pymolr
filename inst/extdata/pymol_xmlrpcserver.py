@@ -1,8 +1,11 @@
-from pymol import cmd, util, keywords
+from pymol import cmd, util, keywords, preset
 import xmlrpclib
 from SimpleXMLRPCServer import SimpleXMLRPCServer
 import argparse
 import sys
+
+# Mapping of legal module names to modules
+MODULES = {"util": util, "preset": preset}
 
 arg_parser = argparse.ArgumentParser()
 arg_parser.add_argument('--rpc-host', default="localhost", type=str)
@@ -36,6 +39,11 @@ class PymolServer(SimpleXMLRPCServer) :
             func = keywords.get_command_keywords()[method][0]
         elif hasattr(cmd, method) :
             func = getattr(cmd, method)
+        elif method.startswith("preset.") or method.startswith("util."):
+            module, function = method.split(".")
+            if module in MODULES and hasattr(MODULES[module], function):
+                func = getattr(MODULES[module], function)
+
         if not callable(func) :
             raise ValueError("{} is not callable".format(method))
 

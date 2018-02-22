@@ -12,6 +12,7 @@ from __future__ import print_function
 import inspect
 import pymol.keywords
 import pymol.helping
+import pymol.util
 import re
 import collections
 
@@ -173,6 +174,11 @@ def docstring_to_rd(cmd_name, args_r, sections):
         r"\alias{{Pymol${name}}}".format(name=cmd_name),
         r"\title{{Execute PyMol '{name}' command}}".format(name=cmd_name),
     ])
+    # If there is only one section, it should be the description
+    if len(sections) == 1 and None in sections:
+        sections["DESCRIPTION"] = sections[None]
+        del sections[None]
+
     # \description
     if "DESCRIPTION" in sections:
         desc = "\n".join(strip_blank(sections["DESCRIPTION"]))
@@ -334,6 +340,14 @@ def dump_cmds():
         if cmd[0] not in pymol_helping:
             cmds[cmd_name] = cmd
 
+    # Add functions from the presets module and the util module
+    util_functions = inspect.getmembers(pymol.util, inspect.isfunction)
+    for name, func in util_functions:
+        cmds["util.{}".format(name)] = (func,)
+    preset_functions = inspect.getmembers(pymol.preset, inspect.isfunction)
+    for name, func in preset_functions:
+        cmds["preset.{}".format(name)] = (func,)
+
     for cmd_name, cmd in cmds.iteritems():
         # Skip commands beginning with "_". I assume that they are internal.
         # Some are just warnings about python keywordss.
@@ -352,14 +366,22 @@ def dump_cmds():
             # If a docstring is available, parse it into sections and reformat
             # it as an Rd file.
             doc_sections = docstring_sections(cmd[0].__doc__)
+            link_dst = "Pymol${name}".format(name=cmd_name)
             if "DESCRIPTION" in doc_sections:
                 desc_str = escape_quotes("\n".join(
                     doc_sections["DESCRIPTION"]
                 ).strip())
-                link_dst = "Pymol${name}".format(name=cmd_name)
                 method_docstring = DOCSTRING_TEMPLATE.format(
                     description=desc_str,
                     link=link_dst)
+            else:
+                # Otherwise, just take the first non-blank line.
+                non_empty = strip_blank(cmd[0].__doc__.split("\n"))
+                if len(non_empty) > 0:
+                    method_docstring = DOCSTRING_TEMPLATE.format(
+                        description=escape_quotes(non_empty[0].strip()),
+                        link=link_dst)
+
 
         # These are the arguments that are passed on to xml.do.
         fn_body = R_METHOD_TEMPLATE.format(
