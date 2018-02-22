@@ -25,7 +25,7 @@ BasePymol$methods(
       rpc.server <- system.file("extdata", "pymol_xmlrpcserver.py",
                                 package="pymolr")
       .self$executable <<- executable
-      .self$args <<- c("-q", "-Q",
+      .self$args <<- c("-q",
                        if(!show.gui) "-c",
                        rpc.server,
                        if(show.gui) "--rpc-bg",
@@ -43,7 +43,7 @@ BasePymol$methods(
       # Loop until the RPC server comes up. PyMol can take quite a long time to
       # start, so we might have to Sys.sleep() a few times until it comes up.
       exit.status <- NA
-      max.tries <- 3
+      max.tries <- 10
       connection.tries <- 0
       while(TRUE){
         exit.status <- sys::exec_status(.self$pid, wait=FALSE)
